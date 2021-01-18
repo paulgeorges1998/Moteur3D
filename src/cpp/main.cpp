@@ -12,14 +12,17 @@ const int height = 800;
 
 int main(int argc, char** argv) {
 
-    TGAImage image(width, height, TGAImage::RGB);
-
     Modele *modele = new Modele("ressources/african_head.obj");
 
-    filDeFer(modele, image, width, height);
+    TGAImage imageFdf(width, height, TGAImage::RGB);
+    filDeFer(modele, imageFdf, width, height);
+    imageFdf.flip_vertically();
+    imageFdf.write_tga_file("images/african_head_fdf.tga");
 
-    image.flip_vertically();
-    image.write_tga_file("images/african_head.tga");
+    TGAImage imageTriangles(width, height, TGAImage::RGB);
+    triangles(modele, imageTriangles, width, height);
+    imageTriangles.flip_vertically();
+    imageTriangles.write_tga_file("images/african_head_triangles.tga");
 
     return 0;
 }

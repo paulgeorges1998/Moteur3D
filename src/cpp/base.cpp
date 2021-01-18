@@ -15,3 +15,16 @@ void filDeFer(Modele *modele, TGAImage &image, int width, int height){
         }
     }
 }
+
+void triangles(Modele *modele, TGAImage &image, int width, int height){
+
+    for (int i=0; i<modele->nFaces(); i++) {
+        std::vector<int> face = modele->face(i);
+        Vec2i coords_ecran[3];
+        for (int j = 0; j < 3; j++) {
+            Vec3f coords = modele->sommet(face[j]);
+            coords_ecran[j] = Vec2i((coords.x + 1.)*width/2., (coords.y + 1.)*height/2.);
+        }
+        triangle(coords_ecran[0], coords_ecran[1], coords_ecran[2], image, TGAColor(rand()%255, rand()%255, rand()%255, 255));
+    }
+}

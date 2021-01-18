@@ -32,3 +32,42 @@ void ligne(int x0, int y0, int x1, int y1, TGAImage &image, TGAColor color) {
 }
 
 
+void triangle(Vec2i A, Vec2i B, Vec2i C, TGAImage &image, TGAColor color) {
+
+    // tri des sommets A, B, C par y croissant
+    if (A.y > B.y) std::swap(A, B);
+    if (A.y > C.y) std::swap(A, C);
+    if (B.y > C.y) std::swap(B, C);
+
+    int hauteurTriangle = C.y - A.y;
+
+    //parcours moitié inférieure
+    for(int y = A.y; y <= B.y; y++){
+        int hauteurMoitie = B.y - A.y + 1;
+        float alpha = (float)(y - A.y)/hauteurTriangle;
+        float beta  = (float)(y - A.y)/hauteurMoitie;
+        Vec2i pointAC = A + (C - A)*alpha;
+        Vec2i pointAB = A + (B - A)*beta;
+        if (pointAC.x > pointAB.x) std::swap(pointAC, pointAB);
+        // coloriage du segment horizontal
+        for(int j = pointAC.x; j <= pointAB.x; j++){
+            image.set(j, y, color);
+        }
+    }
+
+    //parcours moitié supérieure
+    for(int y = B.y; y <= C.y; y++){
+        int hauteurMoitie =  C.y - B.y + 1;
+        float alpha = (float)(y - A.y)/hauteurTriangle;
+        float beta  = (float)(y - B.y)/hauteurMoitie;
+        Vec2i pointAC = A + (C - A)*alpha;
+        Vec2i pointBC = B + (C - B)*beta;
+        if(pointAC.x > pointBC.x) std::swap(pointAC, pointBC);
+        // coloriage du segment horizontal
+        for(int j = pointAC.x; j <= pointBC.x; j++) {
+            image.set(j, y, color);
+        }
+    }
+}
+
+
