@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include "geometry.h"
+#include "tgaimage.h"
 
 class Modele
 {
@@ -14,10 +15,16 @@ class Modele
         std::vector<int> face(int i);
         int nSommets();
         int nFaces();
+        TGAColor couleurTexture(Vec2i uv);
+        Vec2i getuv(int face, int sommet);
+
 
     private:
         std::vector<Vec3f> sommets;
-        std::vector<std::vector<int> > faces;
+        std::vector<std::vector<Vec3i> > faces;
+        std::vector<Vec2f> uv;
+        TGAImage diffusemap;
+
 };
 
 #endif // MODELE_H

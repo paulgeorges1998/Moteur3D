@@ -24,5 +24,10 @@ int main(int argc, char** argv) {
     imageTriangles.flip_vertically();
     imageTriangles.write_tga_file("images/african_head_triangles.tga");
 
+    TGAImage imageTexture(width, height, TGAImage::RGB);
+    texture(modele, imageTexture, width, height);
+    imageTexture.flip_vertically();
+    imageTexture.write_tga_file("images/african_head_texture.tga");
+
     return 0;
 }

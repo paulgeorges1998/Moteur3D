@@ -44,14 +44,16 @@ void triangle(Vec3f *pts, float *zbuffer, int width, int height, TGAImage &image
         }
     }
     Vec3f P;
-    for (P.x=bboxmin.x; P.x<=bboxmax.x; P.x++) {
-        for (P.y=bboxmin.y; P.y<=bboxmax.y; P.y++) {
-            Vec3f bc_screen  = barycentric(pts[0], pts[1], pts[2], P);
+    for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++) {
+        for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) {
+            Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
             if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue;
             P.z = 0;
-            for (int i=0; i<3; i++) P.z += pts[i][2]*bc_screen[i];
-            if (zbuffer[int(P.x+P.y*width)]<P.z) {
-                zbuffer[int(P.x+P.y*width)] = P.z;
+            for (int i=0; i<3; i++){
+                P.z += pts[i][2] * bc_screen[i];
+            }
+            if (zbuffer[int(P.x + P.y * width)] < P.z) {
+                zbuffer[int(P.x + P.y * width)] = P.z;
                 image.set(P.x, P.y, color);
             }
         }
@@ -60,3 +62,38 @@ void triangle(Vec3f *pts, float *zbuffer, int width, int height, TGAImage &image
 
 
 
+void triangleTexture(Modele *modele, Vec3f *pts, Vec2i *pts2, float *zbuffer, int width, int height, TGAImage &image, float intensity) {
+    Vec2f bboxmin( std::numeric_limits<float>::max(),  std::numeric_limits<float>::max());
+    Vec2f bboxmax(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+    Vec2f clamp(image.get_width()-1, image.get_height()-1);
+    for (int i=0; i<3; i++) {
+        for (int j=0; j<2; j++) {
+            bboxmin[j] = std::max(0.f,      std::min(bboxmin[j], pts[i][j]));
+            bboxmax[j] = std::min(clamp[j], std::max(bboxmax[j], pts[i][j]));
+        }
+    }
+    Vec3f P;
+    Vec2i P2;
+    for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++) {
+        for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) {
+            Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
+            if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue;
+            P.z = 0;
+            P2.x = 0;
+            P2.y = 0;
+            for (int i=0; i<3; i++){
+                P.z += pts[i][2] * bc_screen[i];
+                P2.x += pts2[i][0] * bc_screen[i];
+                P2.y += pts2[i][1] * bc_screen[i];
+            }
+            if (zbuffer[int(P.x + P.y * width)] < P.z) {
+                zbuffer[int(P.x + P.y * width)] = P.z;
+                TGAColor color = modele->couleurTexture(P2);
+                color.r *= intensity;
+                color.g *= intensity;
+                color.b *= intensity;
+                image.set(P.x, P.y, color);
+            }
+        }
+    }
+}
