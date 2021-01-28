@@ -18,13 +18,30 @@ void filDeFer(Modele *modele, TGAImage &image, int width, int height){
 
 void triangles(Modele *modele, TGAImage &image, int width, int height){
 
+    float *zbuffer = new float[height * width];
+    for(int i = 0; i < height * width; i++){
+        zbuffer[i] = INT_MIN;
+    }
+
     for (int i=0; i<modele->nFaces(); i++) {
         std::vector<int> face = modele->face(i);
-        Vec2i coords_ecran[3];
-        for (int j = 0; j < 3; j++) {
+        Vec3f coords_ecran[3];
+        Vec3f coords_monde[3];
+        for (int j = 0; j < 3; j++){
             Vec3f coords = modele->sommet(face[j]);
-            coords_ecran[j] = Vec2i((coords.x + 1.)*width/2., (coords.y + 1.)*height/2.);
+            coords_ecran[j] = Vec3f(int((coords.x+1.)*width/2.+.5), int((coords.y+1.)*height/2.+.5), coords.z);
+            coords_monde[j] = coords;
         }
-        triangle(coords_ecran[0], coords_ecran[1], coords_ecran[2], image, TGAColor(rand()%255, rand()%255, rand()%255, 255));
+
+        Vec3f n = produitVectoriel(coords_monde[2]-coords_monde[0], coords_monde[1]-coords_monde[0]);
+        n.normalize();
+        Vec3f lumiere(0, 0, -1);
+        float intensity = produitScalaire(n, lumiere);
+        if (intensity > 0) {
+            triangle(coords_ecran, zbuffer, width, height, image, TGAColor(intensity*255, intensity*255, intensity*255, 255));
+        }
     }
 }
+
+
+

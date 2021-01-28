@@ -8,4 +8,6 @@ void filDeFer(Modele *modele, TGAImage &image, int width, int height);
 
 void triangles(Modele *modele, TGAImage &image, int width, int height);
 
+
+
 #endif
