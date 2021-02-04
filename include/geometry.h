@@ -220,11 +220,13 @@ typedef vec<4,  float> Vec4f;
 typedef mat<4,4,float> Matrix;
 
 Vec3f produitVectoriel(Vec3f v1, Vec3f v2);
-
 float produitScalaire(Vec3f v1, Vec3f v2);
-
 Vec3f barycentric(Vec3f A, Vec3f B, Vec3f C, Vec3f P);
 
-
+Vec3f m2v(Matrix m);
+Matrix v2m(Vec3f v);
+Matrix viewport(int x, int y, int w, int h);
+Vec3i floatToInt(Vec3f);
+Vec3f intToFloat(Vec3i);
 
 #endif //__GEOMETRY_H__

@@ -27,3 +27,52 @@ Vec3f barycentric(Vec3f A, Vec3f B, Vec3f C, Vec3f P) {
     return Vec3f(-1,1,1);
 
 }
+
+
+
+Vec3f m2v(Matrix m) {
+    return Vec3f(m[0][0]/m[3][0], m[1][0]/m[3][0], m[2][0]/m[3][0]);
+}
+
+Matrix v2m(Vec3f v) {
+    Matrix m;
+    m[0][0] = v.x;
+    m[1][0] = v.y;
+    m[2][0] = v.z;
+    m[3][0] = 1.f;
+    return m;
+}
+
+Matrix viewport(int x, int y, int w, int h) {
+    Matrix m = Matrix::identity();
+    m[0][3] = x+w/2.f;
+    m[1][3] = y+h/2.f;
+    m[2][3] = 255/2.f;
+
+    m[0][0] = w/2.f;
+    m[1][1] = h/2.f;
+    m[2][2] = 255/2.f;
+    return m;
+}
+
+Vec3i floatToInt(Vec3f vf){
+    Vec3i v;
+    v.x = (int)vf.x;
+    v.y = (int)vf.y;
+    v.z = (int)vf.z;
+    return v;
+}
+
+Vec3f intToFloat(Vec3i vi){
+    Vec3f v;
+    v.x = vi.x + 0.5;
+    v.y = vi.y + 0.5;
+    v.z = vi.z + 0.5;
+    return v;
+}
+
+
+
+
+
+

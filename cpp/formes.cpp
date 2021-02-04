@@ -33,20 +33,20 @@ void ligne(int x0, int y0, int x1, int y1, TGAImage &image, TGAColor color) {
 }
 
 
-void triangle(Vec3f *pts, float *zbuffer, int width, int height, TGAImage &image, TGAColor color) {
-    Vec2f bboxmin( std::numeric_limits<float>::max(),  std::numeric_limits<float>::max());
-    Vec2f bboxmax(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
-    Vec2f clamp(image.get_width()-1, image.get_height()-1);
+void triangle(Vec3i *pts, float *zbuffer, int width, int height, TGAImage &image, TGAColor color) {
+    Vec2i bboxmin( std::numeric_limits<int>::max(),  std::numeric_limits<int>::max());
+    Vec2i bboxmax(-std::numeric_limits<int>::max(), -std::numeric_limits<int>::max());
+    Vec2i clamp(image.get_width()-1, image.get_height()-1);
     for (int i=0; i<3; i++) {
         for (int j=0; j<2; j++) {
-            bboxmin[j] = std::max(0.f,      std::min(bboxmin[j], pts[i][j]));
+            bboxmin[j] = std::max(0,      std::min(bboxmin[j], pts[i][j]));
             bboxmax[j] = std::min(clamp[j], std::max(bboxmax[j], pts[i][j]));
         }
     }
     Vec3f P;
     for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++) {
         for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) {
-            Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
+            Vec3f bc_screen = barycentric(intToFloat(pts[0]), intToFloat(pts[1]), intToFloat(pts[2]), P);
             if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue;
             P.z = 0;
             for (int i=0; i<3; i++){
@@ -62,21 +62,22 @@ void triangle(Vec3f *pts, float *zbuffer, int width, int height, TGAImage &image
 
 
 
-void triangleTexture(Modele *modele, Vec3f *pts, Vec2i *pts2, float *zbuffer, int width, int height, TGAImage &image, float intensity) {
-    Vec2f bboxmin( std::numeric_limits<float>::max(),  std::numeric_limits<float>::max());
-    Vec2f bboxmax(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
-    Vec2f clamp(image.get_width()-1, image.get_height()-1);
+void triangleTexture(Modele *modele, Vec3i *pts, Vec2i *pts2, float *zbuffer, int width, int height, TGAImage &image, float intensity) {
+    Vec2i bboxmin( std::numeric_limits<int>::max(),  std::numeric_limits<int>::max());
+    Vec2i bboxmax(-std::numeric_limits<int>::max(), -std::numeric_limits<int>::max());
+    Vec2i clamp(image.get_width()-1, image.get_height()-1);
     for (int i=0; i<3; i++) {
         for (int j=0; j<2; j++) {
-            bboxmin[j] = std::max(0.f,      std::min(bboxmin[j], pts[i][j]));
+            bboxmin[j] = std::max(0,      std::min(bboxmin[j], pts[i][j]));
             bboxmax[j] = std::min(clamp[j], std::max(bboxmax[j], pts[i][j]));
         }
     }
     Vec3f P;
     Vec2i P2;
+
     for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++) {
         for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) {
-            Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
+            Vec3f bc_screen = barycentric(intToFloat(pts[0]), intToFloat(pts[1]), intToFloat(pts[2]), P);
             if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue;
             P.z = 0;
             P2.x = 0;

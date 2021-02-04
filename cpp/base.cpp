@@ -23,13 +23,17 @@ void triangles(Modele *modele, TGAImage &image, int width, int height){
         zbuffer[i] = INT_MIN;
     }
 
+    Matrix proj = Matrix::identity();
+    Matrix vp = viewport(width/8, height/8, width*3/4, height*3/4);
+    proj[3][2] = -1.f/3;
+
     for (int i=0; i<modele->nFaces(); i++) {
         std::vector<int> face = modele->face(i);
-        Vec3f coords_ecran[3];
+        Vec3i coords_ecran[3];
         Vec3f coords_monde[3];
         for (int j = 0; j < 3; j++){
             Vec3f coords = modele->sommet(face[j]);
-            coords_ecran[j] = Vec3f(int((coords.x+1.)*width/2.+.5), int((coords.y+1.)*height/2.+.5), coords.z);
+            coords_ecran[j] = floatToInt(m2v(vp * proj * v2m(coords)));
             coords_monde[j] = coords;
         }
 
@@ -51,13 +55,17 @@ void texture(Modele *modele, TGAImage &image, int width, int height){
         zbuffer[i] = INT_MIN;
     }
 
+    Matrix proj = Matrix::identity();
+    Matrix vp = viewport(width/8, height/8, width*3/4, height*3/4);
+    proj[3][2] = -1.f/3;
+
     for (int i=0; i<modele->nFaces(); i++) {
         std::vector<int> face = modele->face(i);
-        Vec3f coords_ecran[3];
+        Vec3i coords_ecran[3];
         Vec3f coords_monde[3];
         for (int j = 0; j < 3; j++){
             Vec3f coords = modele->sommet(face[j]);
-            coords_ecran[j] = Vec3f(int((coords.x+1.)*width/2.+.5), int((coords.y+1.)*height/2.+.5), coords.z);
+            coords_ecran[j] = floatToInt(m2v(vp * proj * v2m(coords)));
             coords_monde[j] = coords;
         }
 
