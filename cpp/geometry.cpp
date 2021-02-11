@@ -13,7 +13,6 @@ float produitScalaire(Vec3f v1, Vec3f v2){
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-
 Vec3f barycentric(Vec3f A, Vec3f B, Vec3f C, Vec3f P) {
     Vec3f s[2];
     for (int i=2; i--; ) {
@@ -27,8 +26,6 @@ Vec3f barycentric(Vec3f A, Vec3f B, Vec3f C, Vec3f P) {
     return Vec3f(-1,1,1);
 
 }
-
-
 
 Vec3f m2v(Matrix m) {
     return Vec3f(m[0][0]/m[3][0], m[1][0]/m[3][0], m[2][0]/m[3][0]);
@@ -48,11 +45,25 @@ Matrix viewport(int x, int y, int w, int h) {
     m[0][3] = x+w/2.f;
     m[1][3] = y+h/2.f;
     m[2][3] = 255/2.f;
-
     m[0][0] = w/2.f;
     m[1][1] = h/2.f;
     m[2][2] = 255/2.f;
     return m;
+}
+
+Matrix lookat(Vec3f camera, Vec3f centre, Vec3f u) {
+    Vec3f z = (camera - centre).normalize();
+    Vec3f x = cross(u,z).normalize();
+    Vec3f y = cross(z,x).normalize();
+    Matrix Minv = Matrix::identity();
+    Matrix Tr   = Matrix::identity();
+    for (int i=0; i<3; i++) {
+        Minv[0][i] = x[i];
+        Minv[1][i] = y[i];
+        Minv[2][i] = z[i];
+        Tr[i][3] = -centre[i];
+    }
+    return Minv*Tr;
 }
 
 Vec3i floatToInt(Vec3f vf){

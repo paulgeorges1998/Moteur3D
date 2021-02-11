@@ -226,6 +226,7 @@ Vec3f barycentric(Vec3f A, Vec3f B, Vec3f C, Vec3f P);
 Vec3f m2v(Matrix m);
 Matrix v2m(Vec3f v);
 Matrix viewport(int x, int y, int w, int h);
+Matrix lookat(Vec3f camera, Vec3f centre, Vec3f u);
 Vec3i floatToInt(Vec3f);
 Vec3f intToFloat(Vec3i);
 

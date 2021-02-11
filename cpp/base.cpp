@@ -48,7 +48,12 @@ void triangles(Modele *modele, TGAImage &image, int width, int height){
 }
 
 
+
 void texture(Modele *modele, TGAImage &image, int width, int height){
+
+    Vec3f camera = Vec3f(-3, 0, 3);
+    Vec3f centre = Vec3f(0, 0, 0);
+    Vec3f u = Vec3f(0, 1, 0);
 
     float *zbuffer = new float[height * width];
     for(int i = 0; i < height * width; i++){
@@ -57,7 +62,7 @@ void texture(Modele *modele, TGAImage &image, int width, int height){
 
     Matrix proj = Matrix::identity();
     Matrix vp = viewport(width/8, height/8, width*3/4, height*3/4);
-    proj[3][2] = -1.f/3;
+    proj[3][2] = -1.f/(camera - centre).norm();
 
     for (int i=0; i<modele->nFaces(); i++) {
         std::vector<int> face = modele->face(i);
@@ -65,7 +70,8 @@ void texture(Modele *modele, TGAImage &image, int width, int height){
         Vec3f coords_monde[3];
         for (int j = 0; j < 3; j++){
             Vec3f coords = modele->sommet(face[j]);
-            coords_ecran[j] = floatToInt(m2v(vp * proj * v2m(coords)));
+            Matrix modelview = lookat(camera, centre, u);
+            coords_ecran[j] = floatToInt(m2v(vp * proj * modelview * v2m(coords)));
             coords_monde[j] = coords;
         }
 
