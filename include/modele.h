@@ -12,18 +12,25 @@ class Modele
         Modele(const char *filename);
         virtual ~Modele();
         Vec3f sommet(int i);
+        Vec3f sommet(int i, int n);
         std::vector<int> face(int i);
         int nSommets();
         int nFaces();
         TGAColor couleurTexture(Vec2i uv);
         Vec2i getuv(int face, int sommet);
+        Vec3f normal(Vec2f uvf);
+        Vec3f normal(int iface, int nthvert);
+
 
 
     private:
         std::vector<Vec3f> sommets;
         std::vector<std::vector<Vec3i> > faces;
         std::vector<Vec2f> uv;
+        std::vector<Vec3f> norms;
         TGAImage diffusemap;
+        TGAImage normalmap;
+        void load_texture(std::string filename, const char *suffix, TGAImage &img);
 
 };
 

@@ -210,6 +210,9 @@ template <size_t DimRows,size_t DimCols,class T> std::ostream& operator<<(std::o
     return out;
 }
 
+template <typename T> T CLAMP(const T& value, const T& low, const T& high) {
+    return value < low ? low : (value > high ? high : value);
+}
 /////////////////////////////////////////////////////////////////////////////////
 
 typedef vec<2,  float> Vec2f;

@@ -30,7 +30,7 @@ void images(std::string filename){
     imageTriangles.write_tga_file(tri.c_str());
 
     TGAImage imageTexture(width, height, TGAImage::RGB);
-    texture(modele, imageTexture, width, height);
+    trianglesTexture(modele, imageTexture, width, height);
     imageTexture.flip_vertically();
     imageTexture.write_tga_file(tex.c_str());
 
