@@ -60,40 +60,28 @@ void triangle(Shader shader, Vec3i *pts, TGAImage &zbuffer, int width, int heigh
 
 
 
-void triangleTexture(Modele *modele, Vec3i *pts, Vec2i *pts2, float *zbuffer, int width, int height, TGAImage &image, float intensity) {
+void triangleTexture(Shader shader, Modele *modele, Vec3i *pts, TGAImage &zbuffer, int width, int height, TGAImage &image) {
     Vec2i bboxmin( std::numeric_limits<int>::max(),  std::numeric_limits<int>::max());
     Vec2i bboxmax(-std::numeric_limits<int>::max(), -std::numeric_limits<int>::max());
-    Vec2i clamp(image.get_width()-1, image.get_height()-1);
     for (int i=0; i<3; i++) {
         for (int j=0; j<2; j++) {
-            bboxmin[j] = std::max(0, std::min(bboxmin[j], pts[i][j]));
-            bboxmax[j] = std::min(clamp[j], std::max(bboxmax[j], pts[i][j]));
+            bboxmin[j] = std::min(bboxmin[j], pts[i][j]);
+            bboxmax[j] = std::max(bboxmax[j], pts[i][j]);
         }
     }
-    Vec3f P;
-    Vec2i P2;
-
+    Vec3i P;
+    TGAColor color;
     for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++) {
         for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) {
-            Vec3f bc_screen = barycentric(intToFloat(pts[0]), intToFloat(pts[1]), intToFloat(pts[2]), P);
-            if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue;
-            P.z = 0;
-            P2.x = 0;
-            P2.y = 0;
-            for (int i=0; i<3; i++){
-                P.z += pts[i][2] * bc_screen[i];
-                P2.x += pts2[i][0] * bc_screen[i];
-                P2.y += pts2[i][1] * bc_screen[i];
-            }
-            if (zbuffer[int(P.x + P.y * width)] < P.z) {
-                zbuffer[int(P.x + P.y * width)] = P.z;
-                TGAColor color = modele->couleurTexture(P2);
-                for(int i = 0; i < 4; i++){
-                    color[i] *= intensity;
-                }
-
+            Vec3f bc_screen = barycentric(intToFloat(pts[0]), intToFloat(pts[1]), intToFloat(pts[2]), intToFloat(P));
+            P.z = std::max(0, std::min(255, int(pts[0].z * bc_screen.x + pts[1].z * bc_screen.y + pts[2].z * bc_screen.z + .5)));
+            if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0 || zbuffer.get(P[0], P[1])[0]>P[2]) continue;
+            bool discard = shader.fragmentTex(modele, bc_screen, color);
+            if (!discard) {
+                zbuffer.set(P.x, P.y, TGAColor(P[2]));
                 image.set(P.x, P.y, color);
             }
         }
     }
+
 }

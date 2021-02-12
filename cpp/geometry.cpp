@@ -27,6 +27,19 @@ Vec3f barycentric(Vec3f A, Vec3f B, Vec3f C, Vec3f P) {
 }
 
 
+Vec3f barycentric2(Vec2f A, Vec2f B, Vec2f C, Vec2f P) {
+    Vec3f s[2];
+    for (int i=2; i--; ) {
+        s[i][0] = C[i]-A[i];
+        s[i][1] = B[i]-A[i];
+        s[i][2] = A[i]-P[i];
+    }
+    Vec3f u = cross(s[0], s[1]);
+    if (std::abs(u[2])>1e-2)
+        return Vec3f(1.f-(u.x+u.y)/u.z, u.y/u.z, u.x/u.z);
+    return Vec3f(-1,1,1);
+}
+
 
 Vec3f m2v(Matrix m) {
     return Vec3f(m[0][0]/m[3][0], m[1][0]/m[3][0], m[2][0]/m[3][0]);
@@ -80,6 +93,20 @@ Vec3f intToFloat(Vec3i vi){
     v.x = vi.x + 0.5;
     v.y = vi.y + 0.5;
     v.z = vi.z + 0.5;
+    return v;
+}
+
+Vec2i floatToInt(Vec2f vf){
+    Vec2i v;
+    v.x = (int)vf.x;
+    v.y = (int)vf.y;
+    return v;
+}
+
+Vec2f intToFloat(Vec2i vi){
+    Vec2f v;
+    v.x = vi.x + 0.5;
+    v.y = vi.y + 0.5;
     return v;
 }
 

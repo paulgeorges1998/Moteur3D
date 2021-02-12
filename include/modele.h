@@ -16,8 +16,9 @@ class Modele
         std::vector<int> face(int i);
         int nSommets();
         int nFaces();
-        TGAColor couleurTexture(Vec2i uv);
+        TGAColor couleurTexture(Vec2f uv);
         Vec2i getuv(int face, int sommet);
+        TGAColor diffuse(Vec2f uvf);
         Vec3f normal(Vec2f uvf);
         Vec3f normal(int iface, int nthvert);
 

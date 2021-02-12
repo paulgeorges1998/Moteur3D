@@ -79,13 +79,19 @@ Vec3f Modele::sommet(int i, int n) {
     return sommets[faces[i][n][0]];
 }
 
-TGAColor Modele::couleurTexture(Vec2i uv) {
+TGAColor Modele::couleurTexture(Vec2f uv) {
     return diffusemap.get(uv.x, uv.y);
 }
 
 Vec2i Modele::getuv(int face, int sommet) {
     int idx = faces[face][sommet][1];
     return Vec2i(uv[idx].x * diffusemap.get_width(), uv[idx].y * diffusemap.get_height());
+}
+
+TGAColor Modele::diffuse(Vec2f uvf) {
+    Vec2i uv(uvf[0]*diffusemap.get_width(), uvf[1]*diffusemap.get_height());
+    TGAColor color = diffusemap.get(uv[0], uv[1]);
+    return color;
 }
 
 Vec3f Modele::normal(Vec2f uvf) {
