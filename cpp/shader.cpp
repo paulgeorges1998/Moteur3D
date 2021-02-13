@@ -38,8 +38,12 @@ bool Shader::fragmentTex(Modele *modele, Vec3f bar, TGAColor &color, Vec3f lumie
     Vec2f uv = varying_uv * bar;
     Vec3f n = proj<3>(MIT * embed<4>(modele->normal(uv))).normalize();
     Vec3f l = proj<3>(M * embed<4>(lumiere)).normalize();
-    Vec3f v = modele->normal(uv);
+    Vec3f r = (n*(n*l*2.f) - l).normalize();
+    float spec = pow(std::max(r.z, 0.0f), modele->specular(uv));
     float intensity = std::max(0.f, n*l);
-    color = modele->couleurTexture(uv) * intensity;
+    TGAColor c = modele->couleurTexture(uv) ;
+    for (int i=0; i<3; i++){
+        color[i] = std::min<float>(5 + c[i]*(1.0 * intensity + 0.6 * spec), 255);
+    }
     return false;
 }

@@ -39,6 +39,8 @@ Modele::Modele(const char *filename) : sommets(), faces()
 
     load_texture(filename, "_diffuse.tga", diffusemap);
     load_texture(filename, "_nm.tga", normalmap);
+    load_texture(filename, "_spec.tga", specularmap);
+
 }
 
 Modele::~Modele()
@@ -107,4 +109,9 @@ Vec3f Modele::normal(Vec2f uvf) {
 Vec3f Modele::normal(int iface, int nthvert) {
     int idx = faces[iface][nthvert][2];
     return norms[idx].normalize();
+}
+
+float Modele::specular(Vec2f uvf) {
+    Vec2i uv(uvf[0], uvf[1]);
+    return specularmap.get(uv[0], uv[1])[0]/1.f;
 }

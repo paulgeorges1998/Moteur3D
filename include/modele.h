@@ -21,6 +21,8 @@ class Modele
         TGAColor diffuse(Vec2f uvf);
         Vec3f normal(Vec2f uvf);
         Vec3f normal(int iface, int nthvert);
+        float specular(Vec2f uvf);
+
 
 
 
@@ -31,6 +33,7 @@ class Modele
         std::vector<Vec3f> norms;
         TGAImage diffusemap;
         TGAImage normalmap;
+        TGAImage specularmap;
         void load_texture(std::string filename, const char *suffix, TGAImage &img);
 
 };
