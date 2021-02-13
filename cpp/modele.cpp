@@ -54,6 +54,7 @@ void Modele::load_texture(std::string filename, const char *suffix, TGAImage &im
         std::cerr << "texture file " << texfile << " loading " << (img.read_tga_file(texfile.c_str()) ? "ok" : "failed") << std::endl;
         img.flip_vertically();
     }
+
 }
 
 int Modele::nSommets() {
@@ -95,7 +96,7 @@ TGAColor Modele::diffuse(Vec2f uvf) {
 }
 
 Vec3f Modele::normal(Vec2f uvf) {
-    Vec2i uv(uvf[0]*normalmap.get_width(), uvf[1]*normalmap.get_height());
+    Vec2i uv(uvf[0], uvf[1]);
     TGAColor c = normalmap.get(uv[0], uv[1]);
     Vec3f res;
     for (int i=0; i<3; i++)

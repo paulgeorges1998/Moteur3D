@@ -56,11 +56,12 @@ void trianglesTexture(Modele *modele, TGAImage &image, int width, int height){
 
     Vec3i coords_ecran[3];
     Shader shader;
+    shader.M = proj * modelview;
+    shader.MIT = (proj * modelview).invert_transpose();
     for (int i=0; i<modele->nFaces(); i++) {
-
         for (int j = 0; j < 3; j++){
             coords_ecran[j] = shader.vertexTex(modele, i, j, vp * proj * modelview , lumiere);
         }
-        triangleTexture(shader, modele, coords_ecran, zbuffer, width, height, image);
+        triangleTexture(shader, lumiere, modele, coords_ecran, zbuffer, width, height, image);
     }
 }
