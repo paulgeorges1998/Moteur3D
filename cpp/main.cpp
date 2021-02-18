@@ -6,16 +6,18 @@
 
 
 
-const int width = 800;
-const int height = 800;
-
 
 void images(std::string filename){
+
+    int width = 800;
+    int height = 800;
 
     std::string obj = "ressources/" + filename + ".obj";
     std::string fdf = "images/" + filename + "_fdf.tga";
     std::string tri = "images/" + filename + "_triangles.tga";
-    std::string tex = "images/" + filename + "_texture.tga";
+    std::string tex = "images/" + filename + ".tga";
+    std::string buf = "images/" + filename + "_zbuffer.tga";
+    std::string sbuf = "images/" + filename + "_shadowbuffer.tga";
 
     Modele *modele = new Modele(obj.c_str());
 
@@ -30,9 +32,15 @@ void images(std::string filename){
     imageTriangles.write_tga_file(tri.c_str());
 
     TGAImage imageTexture(width, height, TGAImage::RGB);
-    trianglesTexture(modele, imageTexture, width, height);
+    TGAImage zbuffer(width, height, TGAImage::GRAYSCALE);
+    TGAImage shadowBuffer(width, height, TGAImage::GRAYSCALE);
+    trianglesTexture(modele, imageTexture, width, height, zbuffer, shadowBuffer);
     imageTexture.flip_vertically();
     imageTexture.write_tga_file(tex.c_str());
+    zbuffer.flip_vertically();
+    zbuffer.write_tga_file(buf.c_str());
+    shadowBuffer.flip_vertically();
+    shadowBuffer.write_tga_file(sbuf.c_str());
 
 }
 

@@ -60,7 +60,8 @@ void triangle(Shader shader, Vec3i *pts, TGAImage &zbuffer, int width, int heigh
 
 
 
-void triangleTexture(Shader shader, Vec3f lumiere, Modele *modele, Vec3i *pts, TGAImage &zbuffer, int width, int height, TGAImage &image) {
+void triangleTexture(Shader shader, Vec3f lumiere, Modele *modele, Vec3i *pts, int width, int height, TGAImage &image, TGAImage &buffer, bool shadow) {
+
     Vec2i bboxmin( std::numeric_limits<int>::max(),  std::numeric_limits<int>::max());
     Vec2i bboxmax(-std::numeric_limits<int>::max(), -std::numeric_limits<int>::max());
     for (int i=0; i<3; i++) {
@@ -75,13 +76,20 @@ void triangleTexture(Shader shader, Vec3f lumiere, Modele *modele, Vec3i *pts, T
         for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++) {
             Vec3f bc_screen = barycentric(intToFloat(pts[0]), intToFloat(pts[1]), intToFloat(pts[2]), intToFloat(P));
             P.z = std::max(0, std::min(255, int(pts[0].z * bc_screen.x + pts[1].z * bc_screen.y + pts[2].z * bc_screen.z + .5)));
-            if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0 || zbuffer.get(P[0], P[1])[0]>P[2]) continue;
-            bool discard = shader.fragmentTex(modele, bc_screen, color, lumiere);
-            if (!discard) {
-                zbuffer.set(P.x, P.y, TGAColor(P[2]));
-                image.set(P.x, P.y, color);
+            if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0 || buffer.get(P.x, P.y)[0]>P.z) continue;
+
+            if(!shadow){
+                bool discard = shader.fragmentTex(modele, bc_screen, color, lumiere, width);
+                if(!discard){
+                    image.set(P.x, P.y, color);
+                    buffer.set(P.x, P.y, TGAColor(P.z));
+                }
+            } else {
+                bool discard = shader.fragmentShadow(bc_screen, color);
+                if(!discard){
+                    image.set(P.x, P.y, color);
+                }
             }
         }
     }
-
 }

@@ -2,7 +2,6 @@
 
 Shader::Shader()
 {
-
 }
 
 Shader::~Shader()
@@ -26,16 +25,18 @@ bool Shader::fragment(Vec3f bar, TGAColor &color) {
     return false;
 }
 
-Vec3i Shader::vertexTex(Modele *modele, int i, int n, Matrix VpProjMv, Vec3f lumiere) {
+Vec3i Shader::vertexTex(Modele *modele, int i, int n, Vec3f lumiere) {
     varying_uv.set_col(n, intToFloat(modele->getuv(i, n)));
-    varying_intensity[n] = std::max(0.f, modele->normal(i, n) * lumiere);
-    Vec4f gl_Vertex = embed<4>(modele->sommet(i, n));
-    gl_Vertex = VpProjMv * gl_Vertex;
-    return floatToInt(proj<3>(gl_Vertex/gl_Vertex[3]));
+    Vec4f v = VpProjMv * embed<4>(modele->sommet(i, n));
+    varying_tri.set_col(n, proj<3>(v/v[3]));
+    return floatToInt(proj<3>(v/v[3]));
 }
 
-bool Shader::fragmentTex(Modele *modele, Vec3f bar, TGAColor &color, Vec3f lumiere) {
-    Vec2f uv = varying_uv * bar;
+bool Shader::fragmentTex(Modele *modele, Vec3f barycentre, TGAColor &color, Vec3f lumiere, int width) {
+    Vec4f v = MS * embed<4>(varying_tri * barycentre);
+    v = v/v[3];
+    float shadow = .3+.7*(shadowbuffer.get(int(v[0]), int(v[1]))[0] < v[2] + 43.34);
+    Vec2f uv = varying_uv * barycentre;
     Vec3f n = proj<3>(MIT * embed<4>(modele->normal(uv))).normalize();
     Vec3f l = proj<3>(M * embed<4>(lumiere)).normalize();
     Vec3f r = (n*(n*l*2.f) - l).normalize();
@@ -43,7 +44,22 @@ bool Shader::fragmentTex(Modele *modele, Vec3f bar, TGAColor &color, Vec3f lumie
     float intensity = std::max(0.f, n*l);
     TGAColor c = modele->couleurTexture(uv) ;
     for (int i=0; i<3; i++){
-        color[i] = std::min<float>(20 + c[i]*(1.5 * intensity + 1 * spec), 255);
+        color[i] = std::min<float>(10 + c[i] * shadow * (0.9 * intensity + 0.9 * spec), 255);
     }
     return false;
 }
+
+
+Vec3i Shader::vertexShadow(Modele *modele, int i, int n) {
+    Vec4f v = embed<4>(modele->sommet(i, n));
+    v = VpProjMv * v;
+    varying_tri.set_col(n, proj<3>(v/v[3]));
+    return floatToInt(proj<3>(v/v[3]));
+}
+
+bool Shader::fragmentShadow(Vec3f barycentre, TGAColor &color) {
+    Vec3f v = varying_tri * barycentre;
+    color = TGAColor(255, 255, 255) * (v[2]/255.0);
+    return false;
+}
+
